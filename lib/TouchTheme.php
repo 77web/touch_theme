@@ -62,11 +62,6 @@ class TouchTheme
     return $root;
   }
   
-  public function filterGetTemplate($template)
-  {
-    return $template;
-  }
-  
   public function hockFooter()
   {
     if(self::isTouchDevice())
@@ -93,5 +88,51 @@ class TouchTheme
       
       echo '<div id="touchThemeSwitcher"><a href="'.$switchLink.'">'.$switchTo.'</a>';
     }
+  }
+  
+  public function fixImageWidth($content)
+  {
+    if(self::isTouch())
+    {
+      if(preg_match_all("/<img[^>]+>/is", $content, $matches, PREG_SET_ORDER))
+      {
+        foreach($matches as $match)
+        {
+          $orig_tag = $match[0];
+          
+          if(preg_match("/width=\"([0-9]+)\"/is", $orig_tag, $_matches) && intval(str_replace('px', '', $_matches[1])) > 320)
+          {
+            $new_tag = preg_replace(array("/height=\"[0-9]+\"/i", "/width=\"[0-9]+\"/i"), array('', 'width="100%"'), $orig_tag);
+          }
+          elseif(preg_match("/src=([^\s]+)/i", $orig_tag, $_matches))
+          {
+            $imgurl = str_replace('"', '', $_matches[1]);
+            $homeUrl = get_bloginfo('url');
+            if(strpos($imgurl, $homeUrl)!==false)
+            {
+              $homePath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+              $imgurl = str_replace($homeUrl, $homePath, $imgurl);
+            }
+            $size = @getimagesize($imgurl);
+            
+            if($size && is_array($size))
+            {
+              $width = $size[0];
+              if($width > 320)
+              {
+                $new_tag = str_replace('<img', '<img width="100%"', $orig_tag);
+              }
+            }
+          }
+          
+          if(isset($new_tag))
+          {
+            $content = str_replace($orig_tag, $new_tag, $content);
+            unset($new_tag);
+          }
+        }
+      }
+    }
+    return $content;
   }
 }
