@@ -72,17 +72,25 @@ class TouchTheme
     if(self::isTouchDevice())
     {
       $currentUri = $_SERVER['REQUEST_URI'];
-      $sep = strpos($currentUri, '?')!==false ? '&' : '?';
+      $params = array();
+      if(strpos($currentUri, '?'))
+      {
+        list($currentUri, $queryString) = explode('?', $currentUri);
+        $params = $_GET;
+      }
+      
       if(self::isTouch())
       {
-        $switchLink = $currentUri.$sep.'touch_theme_mode=pc';
+        $params['touch_theme_mode'] = 'pc';
         $switchTo = 'PC';
       }
       else
       {
-        $switchLink = $currentUri.$sep.'touch_theme_mode=touch';;
+        $params['touch_theme_mode'] = 'touch';
         $switchTo = 'Touch';
       }
+      $switchLink = $currentUri.'?'.http_build_query($params);
+      
       echo '<div id="touchThemeSwitcher"><a href="'.$switchLink.'">'.$switchTo.'</a>';
     }
   }
