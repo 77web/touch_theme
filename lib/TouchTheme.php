@@ -16,7 +16,7 @@ class TouchTheme
       self::$_isTouch = strpos(self::$userAgent, 'Android')!==false || strpos(self::$userAgent, 'iPhone');
       
       @session_start();
-      self::$mode = (isset($_SESSION['wp_touch_theme_mode_is_pc']) && $_SESSION['wp_touch_theme_mode_is_pc']) || (isset($_GET['touch_theme_mode']) && $_GET['touch_theme_mode'] == 'pc') ? 'pc' : 'touch';
+      self::$mode = (isset($_SESSION['wp_touch_theme_mode_is_pc']) && $_SESSION['wp_touch_theme_mode_is_pc'] && (!isset($_GET['touch_theme_mode']) || $_GET['touch_theme_mode']!='touch')) || (isset($_GET['touch_theme_mode']) && $_GET['touch_theme_mode'] == 'pc') ? 'pc' : 'touch';
       $_SESSION['wp_touch_theme_mode_is_pc'] = ('pc' === self::$mode);
       unset($_GET['touch_theme_mode']);
       
@@ -35,6 +35,14 @@ class TouchTheme
     return self::$showTouch;
   }
   
+  protected static function isTouchDevice()
+  {
+    if(null === self::$_isTouch)
+    {
+      self::initialize();
+    }
+    return self::$_isTouch;
+  }
   
   public function filterThemeRoot($root)
   {
@@ -57,5 +65,25 @@ class TouchTheme
   public function filterGetTemplate($template)
   {
     return $template;
+  }
+  
+  public function hockFooter()
+  {
+    if(self::isTouchDevice())
+    {
+      $currentUri = $_SERVER['REQUEST_URI'];
+      $sep = strpos($currentUri, '?')!==false ? '&' : '?';
+      if(self::isTouch())
+      {
+        $switchLink = $currentUri.$sep.'touch_theme_mode=pc';
+        $switchTo = 'PC';
+      }
+      else
+      {
+        $switchLink = $currentUri.$sep.'touch_theme_mode=touch';;
+        $switchTo = 'Touch';
+      }
+      echo '<div id="touchThemeSwitcher"><a href="'.$switchLink.'">'.$switchTo.'</a>';
+    }
   }
 }

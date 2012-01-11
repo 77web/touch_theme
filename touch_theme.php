@@ -9,7 +9,7 @@ Auther URI: http://github.com/77web
 require_once dirname(__FILE__).'/lib/TouchTheme.php';
 $ttObj = new TouchTheme();
 
-add_action('init', array($ttObj, 'initialize'));
 add_filter('theme_root', array($ttObj, 'filterThemeRoot'));
 add_filter('theme_root_uri', array($ttObj, 'filterThemeRootUri'));
 add_filter('template', array($ttObj, 'filterGetTemplate'));
+add_action('wp_footer', array($ttObj, 'hockFooter'));
