@@ -13,3 +13,6 @@ add_filter('theme_root', array($ttObj, 'filterThemeRoot'));
 add_filter('theme_root_uri', array($ttObj, 'filterThemeRootUri'));
 add_action('wp_footer', array($ttObj, 'hockFooter'));
 add_filter('the_content', array($ttObj, 'fixImageWidth'));
+
+
+

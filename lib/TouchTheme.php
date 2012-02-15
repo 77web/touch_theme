@@ -25,8 +25,13 @@ class TouchTheme
     }
     
   }
+  
+  public function clearTransients()
+  {
+    //delete_site_transient('theme_roots');
+  }
 
-  protected static function isTouch()
+  public static function isTouch()
   {
     if(null === self::$showTouch)
     {
@@ -77,16 +82,16 @@ class TouchTheme
       if(self::isTouch())
       {
         $params['touch_theme_mode'] = 'pc';
-        $switchTo = 'PC';
+        $switchTo = 'パソコン';
       }
       else
       {
         $params['touch_theme_mode'] = 'touch';
-        $switchTo = 'Touch';
+        $switchTo = 'スマートフォン';
       }
       $switchLink = $currentUri.'?'.http_build_query($params);
       
-      echo '<div id="touchThemeSwitcher"><a href="'.$switchLink.'">'.$switchTo.'</a>';
+      echo '<div id="touchThemeSwitcher">表示方法：<a href="'.$switchLink.'">'.$switchTo.'</a></div>';
     }
   }
   
